@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "linkmory_backend"
+version = "1.0.0"
+description = "Backend and business logic for linkmory"
+keywords = ["fastapi", "webapp", "react", "nfc", "social_network"]
+authors = ["juraj-juraj"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+fastapi = "0.115.0"
+pydantic = "^2.9.2"
+uvicorn = "^0.31.0"
+requests = "^2.32.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.0.0"
+ruff = "^0.6.0"
+mypy = "1.10.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+preview = true
+
+[tool.ruff]
+target-version = "py38"
+line-length = 100
+fix = true
+lint.select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+lint.ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+    # RaiseVanillaArgs aka Avoid specifying long messages outside the exception class
+    "TRY003",
+]
