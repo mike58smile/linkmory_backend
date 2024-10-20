@@ -1,1 +1,1 @@
-web: gunicorn -w 2 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8080 --worker-tmp-dir /dev/shm server:app
+ web: uvicorn --host 0.0.0.0 --port 8080  server:app
