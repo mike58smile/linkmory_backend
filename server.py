@@ -17,6 +17,10 @@ class UserInfo(BaseModel):
     id_fb: Optional[str]
 
 
+class createResponse(BaseModel):
+    return_message: str
+
+
 class UserExists(BaseModel):
     exists: bool
 
@@ -41,8 +45,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://linkmory-web-1.onrender.com",
-        "http://localhost:5173",
+        "*",
     ],  # React app's URL
     allow_credentials=True,
     allow_methods=["*"],
@@ -51,11 +54,19 @@ app.add_middleware(
 
 
 @app.post("/api/user/create/")
-async def create_user(id: str, request: UserInfo) -> UserInfo:
+async def create_user(id: str, request: UserInfo) -> createResponse:
     global users
-    logging.info(f"Post id: {id}")
+    if not request.name:
+        if id in users:
+            del users[id]
+            logging.info(f"Deleting user {id}")
+            return createResponse(return_message=f"User {id} deleted successfully")
+        logging.info(f"Id {id} not created")
+        return createResponse(return_message=f"User {id} did not create")
+
+    logging.info(f"Creating id: {id}")
     users[id] = request
-    return users[id]
+    return createResponse(return_message=f"User {id} created successfully")
 
 
 @app.get("/api/user/info/")
@@ -67,7 +78,7 @@ async def get_user(id: str) -> UserInfo:
         raise HTTPException(status_code=404, detail=f"User {id} does not exist")
     user = users[id].model_copy()
     if user.link_fb:
-        fb_response = requests.get(user.link_fb)
+        fb_response = requests.get(user.link_fb, timeout=2)  # 5 seconds timeout
         if fb_response.status_code == 200:
             match = re.search(r'content="fb://profile/(\d+)"', fb_response.text)
             if match:
@@ -81,3 +92,8 @@ async def user_exists(id: str) -> UserExists:
     id = str(id)
     logging.info(f"User_exists: {id}")
     return UserExists(exists=id in users)
+
+
+@app.get("/")
+def read_root():
+    return {"message": "API is working"}
